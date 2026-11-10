@@ -1,0 +1,47 @@
+/* =========================================================
+ * demo-resume.js — 自动生成，不要手改
+ * 来源：tools/fixtures/demo.json（唯一事实源）
+ * 重新生成：node tools/build-demo.js
+ * ---------------------------------------------------------
+ * 这份示例故意写得像真人：有真事、有职责，但没数、没结果、
+ * 有一处空窗、有一句"精通"。引擎该抓的都在里面。
+ * ========================================================= */
+
+(function (global) {
+  "use strict";
+
+  var DEMO = {
+    "label": "示例简历 · 用户运营（3 年）",
+    "source": "手写靶子，故意留下 8~10 处真实写法里的毛病",
+    "jd": "岗位：用户运营（增长方向）\n职责：负责用户分层与生命周期管理，制定拉新、留存、召回策略，跟进转化与复购指标；\n搭建用户增长模型，推进 A/B 测试与埋点体系建设；\n任职要求：3 年以上用户运营或 CRM 经验，熟悉用户增长模型，具备数据分析能力，跨部门协作推进能力强。",
+    "text": "陈嘉禾 | 男 | 1998.06 | 13800001234 | chenjiahe98@example.com | 上海 | 可到岗 2 周\n求职意向：用户运营 / 增长运营（3 年经验）\n教育背景\n2016.09-2020.06 XX大学 市场营销（本科） 专业排名前 20%\n工作经历\n2020.07-2022.03 XX电商有限公司 类目运营专员\n- 负责天猫店铺的日常运营与活动报名\n- 协助店长完成页面搭建和商品上架\n- 参与竞品资料收集，整理月度数据报表\n- 完成领导交办的其他工作\n2022.08-至今 YY科技有限公司 用户运营\n- 负责 3 个微信社群的日常维护与内容发布\n- 参与会员体系搭建，协助梳理积分规则\n- 负责用户分层数据的整理与复盘\n- 精通用户增长模型，能独立搭建完整增长体系\n项目经历\n2023.03-2023.09 「老带新」拉新项目 项目成员\n- 使用企业微信工具完成邀请链路搭建\n- 负责活动页面的需求文档撰写\n- 参与项目复盘，输出结论文档\n技能证书：熟练使用 Excel、SQL、神策数据；CET-6（512 分）；会剪映\n自我评价：性格开朗，沟通能力强，工作认真负责，有较强的学习能力和团队协作能力，能够承受一定的工作压力，希望在用户增长方向长期发展，为公司创造价值。"
+  };
+
+  global.DEMO_RESUME = DEMO;
+
+  function init() {
+    var btn = document.getElementById("btnLoadDemo");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      if (!global.App) return;
+      App.setResume(DEMO.text, {
+        source: "paste",
+        filename: "",
+        kind: "demo",
+        lines: DEMO.text.split("\n").length,
+        chars: DEMO.text.length,
+        pages: 1,
+        format: null
+      });
+      if (DEMO.jd) App.setJd(DEMO.jd);
+      App.toast("已载入示例简历，正在按引擎跑一遍");
+      App.setTab("scan");
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})(window);

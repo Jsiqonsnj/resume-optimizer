@@ -1,0 +1,52 @@
+﻿PASS 深审引擎与视图已加载  {"v":"1.0"}
+PASS 导航六格顺序：上传 / 知识库 / 审阅 / 深审 / 优化 / 规划  ["upload","knowledge","scan","audit","optimize","plan"]
+PASS 没简历时深审不上锁不显示  {"visible":["upload","knowledge"],"after":"upload"}
+PASS 深审页可进入且正文可见  "audit"
+PASS 放简历后六格导航全解锁  6
+PASS 总分与引擎一致  ["69","69"]
+PASS 档位与引擎一致  ["C 档","C"]
+PASS 封顶说明只在该显示时显示  {"shown":false,"capped":false,"text":""}
+PASS 七维顺序与分数都来自引擎  ["详细度","该补的补了没","真实性","语言 ai味","追问防御","该删的删了没","逻辑与结构"]
+PASS 五个统计块与引擎计数一致  ["37","6","28","6","12"]
+PASS 逐行卡片数 = 引擎行数  19
+PASS 筛选项八个（全部 + 七类）  8
+PASS 引擎版本打在标签上  "AuditEngine 1.0 · 离线规则层"
+PASS 每张卡的行号都指回原文  {"total":19,"bad":0,"open":2,"openHighRisk":true}
+PASS 默认只展开被追问最狠的两行  {"total":19,"bad":0,"open":2,"openHighRisk":true}
+PASS 点行头能展开  ["① 会被这么问","② 够不够细","③ 真不真实 要","⑥ 语言与 AI"]
+PASS 展开后按 ①②③… 编号给判断  ["① 会被这么问","② 够不够细","③ 真不真实 要","⑥ 语言与 AI"]
+PASS 每条追问都有答法骨架  true
+PASS 同一行不出现重复追问  false
+PASS 没有「为什么用「用」」这类废问题  0
+PASS 卡片底部提醒「不替你编事实」  true
+PASS 先动这三条 ≤3 且与引擎一致  {"n":3,"e":3}
+PASS 每条都给收益估算与具体做法  ["详细度 +5 分（估） · 这一行 20 → 80","详细度 +5 分（估） · 这一行 20 → 80","该删 +2 分（估）"]
+PASS 可跳行的动作带跳转按钮  3
+PASS 点「跳到这一行」会展开对应卡片  {"line":"6","found":true,"open":true}
+PASS 每条正文行给可填句式（四槽 + 占位）  "负责天猫店铺的日常运营与活动报名，[怎么做的]，[盘子多大]，[改前 → 改后]"
+PASS 筛选「该删」只留带删点的行  {"expectCut":3,"after":3,"active":1,"expectThin":6,"thinAfter":6,"all":19}
+PASS 筛选「写得太薄」命中数正确  {"expectCut":3,"after":3,"active":1,"expectThin":6,"thinAfter":6,"all":19}
+PASS 筛选单选、切回全部恢复  {"expectCut":3,"after":3,"active":1,"expectThin":6,"thinAfter":6,"all":19}
+PASS 追问条数 = 引擎条数  37
+PASS 追问按风险从高到低排  true
+PASS 每条带原文与答法  {"count":37,"engineAsks":37,"tag":"1 / 37 已备答","bar":"3%","desc":true,"doneClass":true,"storedN":1,"hasSrc":true,"hasSkeleton":true}
+PASS 标记已备答有反馈且落盘  {"tag":"1 / 37 已备答","stored":1}
+PASS 重算后备答进度仍在  {"tag":"1 / 37 已备答","mapped":1}
+PASS 报告十节齐全  ["一、总评","二、先动这三","三、每一处会","四、写得够不","五、真实性与","六、该补什么","七、该删什么","八、语言与 ","九、逻辑与结","十、今日清单"]
+PASS 报告每条带行号  {"len":12397,"refs":98}
+PASS 导出按钮可点（不抛错）  true
+PASS 职能族口径可见（非通用时给出该族看什么）  {"hidden":false,"text":"运营 · 结果型 这一类看的是：你动过哪个指标、动了多少；盘子口径写 用户数 / 单量 / 社群人数 / 活动参与。"}
+PASS JD 逐条落位三档齐全且数目对得上  {"hidden":false,"groups":3,"sum":17,"declared":17}
+PASS 答案判定给出分数、缺口与落盘  {"grade":"63 分 · 答了一半","note":"还差 1 项：准确数。补上这些，这句话就能进简历。","flags":1,"persisted":true}
+PASS 今日清单可勾选、划线并落盘  {"hidden":false,"n":5,"before":"0 / 5 已完成","after":"1 / 5 已完成","persisted":true,"strike":true,"printBtn":true}
+PASS 深审页零横向溢出、无零高块  {"overflowN":0,"overflow":[],"zero":0,"dims":4,"grid":2}
+PASS 桌面 4 列维度 / 2 列内容  {"overflowN":0,"overflow":[],"zero":0,"dims":4,"grid":2}
+PASS 改完重审能看见改前改后  "较上次（19:41）：总分 69 → 70（+1） · 追问 37 → 40（消掉 0 / 新增 3） · 详细度 51 → 53（+2）"
+PASS 分数变化有方向（涨/跌不同色）  "audit-diff is-up"
+PASS 390 宽无横向溢出  {"overflow":0,"cols":1,"dimCols":1}
+PASS 小屏逐行七块塌成单列  {"overflow":0,"cols":1,"dimCols":1}
+PASS 清空简历后深审回到空状态  {"emptyShown":true,"bodyHidden":true,"note":"还没有载入简历。到「上传」页粘贴或拖入一","tabs":2}
+PASS 清空后导航重新上锁  2
+PASS 无 JS 运行时错误  []
+---- 结果 ----
+通过 50 / 50

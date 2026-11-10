@@ -1,0 +1,19 @@
+运营 :: 运营,用户,社群,内容,活动,拉新,留存,增长
+销售 :: 销售,BD,客户经理,渠道,拓客,签单,业绩,招商
+技术 :: 开发,后端,前端,算法,Java,Python,Go,架构
+测试 :: 测试,QA,用例,缺陷,自动化,回归,bug,Bug
+财会 :: 会计,财务,成本,审计,税务,出纳,核算,报表
+人力资源 :: 招聘,HR,人力,薪酬,绩效,员工关系,培训,组织
+行政 :: 行政,后勤,办公,会务,采购,资产管理,前台
+市场 :: 市场,品牌,营销,投放,广告,公关,策划,媒介
+设计 :: 设计,UI,UX,视觉,平面,交互,插画,3D
+制造/工艺 :: 工艺,制造,生产,设备,CNC,装配,质量,良率
+建工 :: 施工,建筑,结构,造价,监理,BIM,暖通,给排水
+教育 :: 教师,老师,课程,教研,班主任,助教,培训师,教培
+医护 :: 护士,护理,临床,医师,药师,医技,门诊,病房
+客服 :: 客服,售后,客诉,工单,呼叫中心,在线客服
+供应链 :: 采购,供应链,仓储,物流,计划,库存,关务,报关
+法务 :: 法务,合规,合同,诉讼,知识产权,风控
+通用 :: 
+
+keys: meta,verb_tiers,verb_lookup,vague_words,overclaim_words,first_person,result_markers,quant_patterns,fake_num,level_words,ipo_level_gap_tip,job_families,industry_kw,industry_pitfall,conversion_map,transferable,jd_stopwords,jd_synonyms,section_patterns,noise_line,time_range,empty_gap_words,misfire_guard,probe_by_family,stability_probes,jd_dict,edu_rank,rewrite_skeletons,fallback_ask,kb,demo

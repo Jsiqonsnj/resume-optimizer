@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>简历优化工作台</title>
+  <meta name="description" content="本地运行的中文简历智能优化工作台：HR 逐行审阅、圈画疑问点、追问改写、JD 匹配与竞争力规划。" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/pro.css" />
+  <link rel="stylesheet" href="css/audit.css" />
+</head>
+<body>
+  <a class="skip-link" href="#workspace">跳到主工作区</a>
+
+  <!-- ============ 顶栏 ============ -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">简历优化工作台</span>
+      <span class="brand-sub">Resume Studio</span>
+    </div>
+
+    <div class="topbar-right">
+      <button id="industryChip" class="chip chip--industry" type="button" title="点击去知识库更换行业">
+        <span class="chip-label">行业</span>
+        <span id="industryChipValue" class="chip-value">未选择</span>
+      </button>
+      <button id="btnSettings" class="btn btn--ghost" type="button">
+        设置
+      </button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- ============ 左侧窄导航 ============ -->
+    <nav class="sidenav" aria-label="主导航">
+      <div class="nav-group" role="tablist" aria-orientation="vertical">
+        <button class="nav-item is-active" type="button" role="tab" aria-selected="true"
+                aria-controls="panel-upload" data-tab="upload" id="tab-upload">
+          <span class="nav-index">01</span><span class="nav-text">上传</span>
+        </button>
+        <button class="nav-item" type="button" role="tab" aria-selected="false"
+                aria-controls="panel-knowledge" data-tab="knowledge" id="tab-knowledge">
+          <span class="nav-index">02</span><span class="nav-text">知识库</span>
+        </button>
+        <button class="nav-item" type="button" role="tab" aria-selected="false" locked
+                aria-controls="panel-scan" data-tab="scan" id="tab-scan" data-gate="1" hidden>
+          <span class="nav-index">03</span><span class="nav-text">审阅</span>
+        </button>
+        <button class="nav-item" type="button" role="tab" aria-selected="false" locked
+                aria-controls="panel-audit" data-tab="audit" id="tab-audit" data-gate="1" hidden>
+          <span class="nav-index">04</span><span class="nav-text">深审</span>
+        </button>
+        <button class="nav-item" type="button" role="tab" aria-selected="false"
+                aria-controls="panel-optimize" data-tab="optimize" id="tab-optimize" data-gate="1" hidden>
+          <span class="nav-index">05</span><span class="nav-text">优化</span>
+        </button>
+        <button class="nav-item" type="button" role="tab" aria-selected="false"
+                aria-controls="panel-plan" data-tab="plan" id="tab-plan" data-gate="1" hidden>
+          <span class="nav-index">06</span><span class="nav-text">规划</span>
+        </button>
+      </div>
+      <div class="nav-foot">
+        <span class="nav-foot-line" id="navHint">放简历后解锁审阅 / 优化 / 规划</span>
+        <span class="nav-foot-line nav-foot-dim">resume_engine 2.0 · 离线</span>
+      </div>
+    </nav>
+
+    <!-- ============ 主工作区 ============ -->
+    <main class="workspace" id="workspace">
+
+      <!-- ---------- 01 上传 ---------- -->
+      <section class="panel is-active" id="panel-upload" data-panel="upload" role="tabpanel" aria-labelledby="tab-upload">
+        <div class="panel-head">
+          <p class="panel-eyebrow">01 / 上传</p>
+          <h1>先把简历放进来</h1>
+          <p class="panel-desc">
+            这一页只做一件事：把料放进来 —— 拖入文件、点选文件，或者直接粘贴正文。粘贴不依赖网络；
+            文件解析会顺带采集字号、页数、空行这些排版信号，改不了的东西先让你看见。
+            载入后换行会保留，审阅按行定位。
+          </p>
+          <p class="panel-desc panel-desc--dim">
+            分工：上传 = 放料和看排版 · 审阅 = 看问题和我为什么这么问 ·
+            深审 = 逐行过七关（会被问什么 / 够不够细 / 真不真实 / 缺什么 / 该删什么 / 有没有 AI 味 / 逻辑通不通） ·
+            优化 = 逐句问你、按骨架给一句能替换的话 · 规划 = 按行业补短板。
+            后四页在你放进简历后自动出现在左侧。
+          </p>
+        </div>
+
+        <div class="panel-body">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="card-title">文件解析</h2>
+              <span id="cdnStatus" class="tag">解析库点击时加载</span>
+            </div>
+            <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="拖入或选择简历文件">
+              <span class="dropzone-icon" aria-hidden="true"></span>
+              <p class="dropzone-title">把简历文件拖到这里</p>
+              <p class="dropzone-hint">PDF / DOCX / PPTX / TXT · 单文件 20MB 以内</p>
+              <span class="dropzone-action">或者点击选择文件</span>
+            </div>
+            <input id="fileInput" type="file" hidden
+                   accept=".pdf,.docx,.pptx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain" />
+            <p id="uploadStatus" class="card-note upload-status">还没载入简历。</p>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h2 class="card-title">粘贴正文</h2>
+              <span class="tag tag--live">离线可用</span>
+            </div>
+            <label class="sr-only" for="resumePaste">简历正文</label>
+            <textarea id="resumePaste" class="textarea" spellcheck="false"
+                      placeholder="把简历全文粘贴进来，保留原有换行（换行会用于审阅的行号定位）…"></textarea>
+            <div class="row row--between">
+              <span id="pasteCount" class="counter">0 字 · 0 行</span>
+              <div class="row row--tight">
+                <button id="btnLoadDemo" class="btn btn--ghost btn--sm" type="button">载入示例简历</button>
+                <button id="btnClipboard" class="btn btn--ghost btn--sm" type="button">从剪贴板读取</button>
+                <button id="btnUsePaste" class="btn btn--primary" type="button">使用这段文本</button>
+              </div>
+            </div>
+            <p class="card-note card-note--dim">快捷键：在输入框里 Ctrl / ⌘ + Enter 直接载入。</p>
+          </div>
+
+          <div class="card" id="resumePreview" hidden>
+            <div class="card-head">
+              <h2 class="card-title">已载入</h2>
+              <span id="previewSource" class="tag">粘贴</span>
+            </div>
+            <div id="previewMeta" class="summary-grid"></div>
+            <pre id="previewText" class="code-block code-block--paper"></pre>
+            <div class="row">
+              <button class="btn btn--primary" type="button" data-goto="scan">去审阅</button>
+              <button id="btnClearResume" class="btn btn--ghost" type="button">清空</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- 02 知识库 ---------- -->
+      <section class="panel" id="panel-knowledge" data-panel="knowledge" role="tabpanel" aria-labelledby="tab-knowledge" hidden>
+        <div class="panel-head">
+          <p class="panel-eyebrow">02 / 知识库</p>
+          <h1>知道 HR 在这个行业看什么</h1>
+          <p class="panel-desc">
+            两级选择行业大类与方向，看该方向的 HR 筛选习惯、偏好写法、常见减分项与核心关键词。
+            选择会同步到顶栏并全站共享，后面的 JD 匹配与规划都按这个方向算。
+          </p>
+        </div>
+
+        <div class="panel-body">
+          <div class="card">
+            <div class="card-head">
+              <h2 class="card-title">选择行业</h2>
+              <span class="tag" id="industryCount">加载中…</span>
+            </div>
+            <label class="sr-only" for="industrySearch">搜索行业</label>
+            <input id="industrySearch" class="input search-input" type="search" autocomplete="off"
+                   placeholder="搜索行业 / 方向 / 关键词，如：芯片、合规、GMP、直播" />
+            <div id="searchResults" class="search-results" hidden></div>
+            <p class="selector-label">行业大类</p>
+            <div class="chips" id="categoryChips"></div>
+            <p class="selector-label">二级方向</p>
+            <div class="chips" id="directionChips">
+              <span class="selector-hint">先选一个行业大类</span>
+            </div>
+            <p class="card-note">
+              当前方向：<strong id="industryCurrentValue">未选择</strong>
+              <span class="card-note--dim">· 同步显示在顶栏，可随时更换</span>
+            </p>
+          </div>
+
+          <div id="industryCards" class="industry-cards"></div>
+        </div>
+      </section>
+
+      <!-- ---------- 03 审阅：问题 + HR 会怎么问 ---------- -->
+      <section class="panel" id="panel-scan" data-panel="scan" role="tabpanel" aria-labelledby="tab-scan" hidden>
+        <div class="panel-head">
+          <p class="panel-eyebrow">03 / 审阅</p>
+          <h1>HR 正在看你的简历</h1>
+          <p class="panel-desc">
+            上半页是我动笔的地方，下半页是我会追着问的问题。这一页只用来看清问题，不动手改 ——
+            要改句子去「优化」，要补短板去「规划」。
+          </p>
+        </div>
+
+        <div class="panel-body">
+          <div class="card scan-bar">
+            <div class="scan-bar-info">
+              <span id="scanStatus" class="scan-status">等待简历…</span>
+              <span class="scan-meta">评分 <strong id="scanScore">--</strong>
+                <span id="scanLevel" class="scan-level" hidden>—</span>
+                · 圈出 <strong id="scanIssueCount">0 处</strong></span>
+            </div>
+            <div class="scan-bar-actions">
+              <button id="btnScanStart" class="btn btn--primary" type="button" disabled>开始 HR 审阅</button>
+              <button id="btnScanSkip" class="btn btn--ghost" type="button" hidden>跳过动画</button>
+              <div class="speed" id="scanSpeed" role="group" aria-label="动画速度">
+                <button type="button" class="speed-btn is-active" data-speed="1">1x</button>
+                <button type="button" class="speed-btn" data-speed="2">2x</button>
+                <button type="button" class="speed-btn" data-speed="4">4x</button>
+              </div>
+              <button class="btn btn--ghost" type="button" data-goto="audit">逐行深审 →</button>
+            </div>
+          </div>
+
+          <div class="paper-wrap">
+            <div class="paper" id="paper">
+              <div class="paper-inner" id="paperInner">
+                <div class="paper-lines" id="paperLines"></div>
+                <svg class="ink-layer" id="inkLayer" aria-hidden="true"></svg>
+                <div class="pen" id="pen" hidden><span class="pen-body"></span><span class="pen-tip"></span></div>
+                <div class="hr-bubble" id="hrBubble" hidden></div>
+              </div>
+            </div>
+            <p class="paper-hint">
+              圈的颜色：灰 = 模糊表述 · 红 = 数据可疑 · 橙 = 时间线冲突 · 蓝 = JD 不匹配 · 黄 = 表述空泛。
+              鼠标悬停圈会高亮，点圈跳到下方对应疑问。
+            </p>
+          </div>
+
+          <div class="pro-wrap" id="proHead" hidden>
+            <div class="card pro-summary" id="proCard">
+              <div class="card-head">
+                <h2 class="card-title">引擎总评</h2>
+                <span class="tag" id="proEngineTag">resume_engine 2.0 · 离线规则层</span>
+              </div>
+              <div class="pro-score-row">
+                <div class="pro-score"><strong id="proScore">--</strong><span>/100</span></div>
+                <div class="pro-score-body">
+                  <p class="pro-advice" id="proAdvice">—</p>
+                  <p class="pro-cap" id="proCapNote" hidden></p>
+                  <div class="chips chips--inline" id="proTags"></div>
+                </div>
+              </div>
+              <div class="pro-radar" id="proRadar" hidden></div>
+              <div class="pro-flags" id="proFlags"></div>
+              <div class="pro-dims" id="proDims"></div>
+              <div class="pro-jd" id="proJd" hidden></div>
+              <div class="six-second" id="proSix"></div>
+            </div>
+          </div>
+
+          <div class="card" id="questionsCard">
+            <div class="card-head">
+              <h2 class="card-title">HR 疑问清单</h2>
+              <span id="questionsProgress" class="tag">已解决 0 / 0</span>
+            </div>
+            <div class="progress"><span id="progressBar" class="progress-bar"></span></div>
+            <p class="empty-text" id="questionsEmpty">扫描结束后，每个圈会在这里拆成一条待处理的疑问。</p>
+            <ul id="questionList" class="q-list"></ul>
+          </div>
+
+          <div class="pro-wrap" id="proWrap" hidden>
+            <div class="card" id="layerCard">
+              <div class="card-head">
+                <h2 class="card-title">四层诊断 · 每层只给最狠的一条</h2>
+                <span class="tag" id="layerCount">—</span>
+              </div>
+              <p class="card-note">一次给 20 条问题只会让人觉得在挑刺。先打一枪让你信，剩下的等你自己问。</p>
+              <div id="layerList" class="layer-list"></div>
+            </div>
+
+            <div class="card" id="probeCard">
+              <div class="card-head">
+                <h2 class="card-title">面试会被这么问</h2>
+                <span class="tag" id="probeCount">—</span>
+              </div>
+              <p class="card-note">改完简历只是进面试。真正让人挂掉的是「这条是怎么算的」——答案先想好。</p>
+              <div id="probeList" class="probe-list"></div>
+            </div>
+
+            <div class="card" id="strengthCard">
+              <div class="card-head">
+                <h2 class="card-title">你手上真有的东西</h2>
+                <span class="tag" id="strengthCount">—</span>
+              </div>
+              <div id="strengthList" class="strength-list"></div>
+            </div>
+          </div>
+
+          <div class="card" id="formatCard" hidden>
+            <div class="card-head">
+              <h2 class="card-title">HR 的格式批注</h2>
+              <span id="formatCount" class="tag">—</span>
+            </div>
+            <p class="card-note">
+              只对上传的文档生效：字号层级、页数、空行、字体、日期格式、分区、联系方式。
+              粘贴纯文本没有这些格式信号，所以不会出现这一段。
+            </p>
+            <div id="formatNotes" class="format-notes"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- 04 深审：逐行过堂，七件事 ---------- -->
+      <section class="panel" id="panel-audit" data-panel="audit" role="tabpanel" aria-labelledby="tab-audit" hidden>
+        <div class="panel-head">
+          <p class="panel-eyebrow">04 / 深审</p>
+          <h1>逐行过堂：每一行都过七关</h1>
+          <p class="panel-desc">
+            审阅页回答「这份简历值多少分」，这一页回答「每一行会被怎么问」。
+            七件事：会被问什么 · 写得够不够细 · 真不真实 · 缺什么 · 该删什么 · 语言有没有 AI 味 · 逻辑通不通。
+            每条结论都指向行号，看得见原文，改得动。
+          </p>
+        </div>
+
+        <div class="panel-body" id="auditBody" hidden>
+          <p class="audit-diff" id="auditDiff" hidden></p>
+
+          <div class="card audit-top" id="auditTopCard">
+            <div class="card-head">
+              <h2 class="card-title">先动这三条（按投入产出排，不按严重程度排）</h2>
+              <span class="tag" id="auditTopCount">—</span>
+            </div>
+            <p class="card-note">
+              改一处能同时解两个问题的地方排在前面。「估」是拿这套权重反推的一阶近似 —— 看哪个维度涨，别看总分跳多少。
+            </p>
+            <ol class="atop-list" id="auditTopList"></ol>
+          </div>
+
+          <div class="card audit-summary">
+            <div class="card-head">
+              <h2 class="card-title">七项体检</h2>
+              <span class="tag" id="auditEngineTag">AuditEngine</span>
+            </div>
+            <div class="audit-score-row">
+              <div class="audit-score"><strong id="auditScore">--</strong><span>/100</span></div>
+              <div class="audit-score-body">
+                <div class="audit-score-top">
+                  <span class="audit-level is-c" id="auditLevel">—</span>
+                  <div class="audit-tags" id="auditTags"></div>
+                </div>
+                <p class="audit-advice" id="auditAdvice">—</p>
+                <p class="audit-fam" id="auditFam" hidden></p>
+                <p class="audit-cap" id="auditCap" hidden></p>
+              </div>
+            </div>
+            <div class="audit-dims" id="auditDims"></div>
+            <div class="audit-counts" id="auditCounts"></div>
+          </div>
+
+          <div class="card audit-toolbar-card">
+            <div class="audit-toolbar">
+              <div class="audit-filters" id="auditFilters" role="group" aria-label="按问题类型筛选"></div>
+              <div class="row row--tight">
+                <button class="btn btn--ghost btn--sm" type="button" id="auditExpandAll">全部展开</button>
+                <button class="btn btn--ghost btn--sm" type="button" id="auditCollapseAll">全部收起</button>
+                <button class="btn btn--ghost btn--sm" type="button" id="auditRecompute">重新深审</button>
+              </div>
+            </div>
+            <p class="card-note card-note--dim">
+              点任意一行展开七项判断。默认只展开被问得最狠的两行 —— 一次砸 20 条等于没给结论。
+            </p>
+          </div>
+
+          <div class="audit-rows" id="auditRows"></div>
+          <p class="empty-text" id="auditRowsEmpty" hidden></p>
+
+          <div class="audit-grid">
+            <div class="card" id="auditAskCard">
+              <div class="card-head">
+                <h2 class="card-title">追问总表 · 按风险排</h2>
+                <span class="tag" id="auditAskCount">—</span>
+              </div>
+              <p class="card-note">
+                这些是面试官真会问出口的话。每条都给一句答法骨架：先说口径，再说你负责哪一段，最后说重做会改什么。
+                准备好一条就点「标记已备答」，进度会记住。
+              </p>
+              <div class="progress"><span id="auditAskBar" class="progress-bar"></span></div>
+              <div class="row row--tight">
+                <button class="btn btn--ghost btn--sm" type="button" id="auditCopyAsks">复制全部追问</button>
+              </div>
+              <ul class="audit-ask-list" id="auditAskList"></ul>
+            </div>
+
+            <div class="card" id="auditToneCard">
+              <div class="card-head">
+                <h2 class="card-title">AI 味词表</h2>
+                <span class="tag" id="auditToneCount">—</span>
+              </div>
+              <p class="card-note">
+                行话、自夸形容词、软素质声明、模板句式 —— 这些词的共同点是：删掉之后信息量不变。
+                所以它们不是风格问题，是占地方。
+              </p>
+              <div id="auditToneList"></div>
+            </div>
+          </div>
+
+          <div class="audit-grid">
+            <div class="card" id="auditCutCard">
+              <div class="card-head">
+                <h2 class="card-title">该删清单</h2>
+                <span class="tag" id="auditCutCount">—</span>
+              </div>
+              <div id="auditCutList"></div>
+            </div>
+            <div class="card" id="auditAddCard">
+              <div class="card-head">
+                <h2 class="card-title">该补清单</h2>
+                <span class="tag" id="auditAddCount">—</span>
+              </div>
+              <div id="auditAddList"></div>
+            </div>
+          </div>
+
+          <div class="card" id="auditLogicCard">
+            <div class="card-head">
+              <h2 class="card-title">逻辑与结构</h2>
+              <span class="tag" id="auditLogicCount">—</span>
+            </div>
+            <p class="card-note">时间线、顺序、技能与经历是否互相打架 —— 这类问题 HR 不会问，但会直接不约你。</p>
+            <div id="auditLogicList"></div>
+          </div>
+
+          <div class="card" id="auditLadderCard">
+            <div class="card-head">
+              <h2 class="card-title">没有数字怎么补（可信度从高到低）</h2>
+              <span class="tag">补数的顺序</span>
+            </div>
+            <p class="card-note">
+              一个都拿不到，就把「做了什么」写到别人能复现的程度。宁可无数字，不要假数字。
+            </p>
+            <div class="audit-ladder" id="auditLadder"></div>
+          </div>
+
+          <div class="card" id="auditJdCard" hidden>
+            <div class="card-head">
+              <h2 class="card-title">JD 逐条落位</h2>
+              <span class="tag" id="auditJdCount">—</span>
+            </div>
+            <p class="card-note">
+              只做关键词对位，不做语义联想：哪个词在正文有证据、哪个只在技能区躺着、哪个全文没提。
+              「全文没提」的，只有你真做过才写进去。
+            </p>
+            <div class="audit-jd" id="auditJdBody"></div>
+          </div>
+
+          <div class="card" id="auditTodoCard">
+            <div class="card-head">
+              <h2 class="card-title">今日清单</h2>
+              <span class="tag" id="auditTodoCount">—</span>
+            </div>
+            <p class="card-note">
+              打印这一张贴在屏幕边上，改完一条划掉一条。都划完了再回来重新深审，看分数动没动。
+            </p>
+            <div class="audit-todo-bar"><span id="auditTodoBar"></span></div>
+            <ul class="audit-todo" id="auditTodoList"></ul>
+            <div class="row row--tight">
+              <button class="btn btn--ghost btn--sm" type="button" id="auditPrint">打印 / 存 PDF</button>
+              <button class="btn btn--ghost btn--sm" type="button" id="auditTodoReset">清空勾选</button>
+            </div>
+          </div>
+
+          <div class="card" id="auditExportCard">
+            <div class="card-head">
+              <h2 class="card-title">导出深审报告</h2>
+              <span class="tag">Markdown</span>
+            </div>
+            <p class="card-note">
+              十节：总评 / 先动这三条 / 追问总表 / 详细度（含可填句式）/ 真实性 / 该补（含 JD 落位）/ 该删 / 语言 / 逻辑 / 今日清单。
+              带行号，可以逐条对着改。
+            </p>
+            <div class="row row--tight">
+              <button id="auditExportMd" class="btn btn--primary btn--sm" type="button">下载深审报告 .md</button>
+              <button id="auditCopyMd" class="btn btn--ghost btn--sm" type="button">复制报告全文</button>
+              <button class="btn btn--ghost btn--sm" type="button" data-goto="optimize">照这份清单去优化页逐句改</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-body" id="auditEmpty">
+          <div class="card">
+            <p class="empty-text" id="auditEmptyNote">还没有载入简历。到「上传」页粘贴或拖入一份，这里会逐行过堂。</p>
+            <div class="row row--tight">
+              <button class="btn btn--primary btn--sm" type="button" data-goto="upload">去上传页</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- 04 优化：逐句改，我问你答 ---------- -->
+      <section class="panel" id="panel-optimize" data-panel="optimize" role="tabpanel" aria-labelledby="tab-optimize" hidden>
+        <div class="panel-head">
+          <p class="panel-eyebrow">05 / 优化</p>
+          <h1>逐句改：我问，你答</h1>
+          <p class="panel-desc">
+            这里不重复诊断，只做一件事：把值得改的句子摘出来，先问你（这里能不能再具体一点、你具体做了什么），
+            再按骨架把你的回答拼成一句能直接替换的话。只重排事实，不新增事实。
+          </p>
+        </div>
+
+        <div class="panel-body">
+          <div class="pro-wrap" id="optWrap" hidden>
+            <div class="card" id="rewriteCard">
+              <div class="card-head">
+                <h2 class="card-title">可优化的句子 · 一句一句过</h2>
+                <span class="tag" id="optCount">—</span>
+                <span class="tag" id="optReady">—</span>
+              </div>
+              <p class="card-note">
+                每条都是我从你简历里摘的原句。三个问题按顺序答，答完点生成 ——
+                拼出来的就是能直接替换的那一句。答不出来就空着，我不替你编数字。
+              </p>
+              <div id="optList" class="opt-list"></div>
+            </div>
+
+            <div class="card" id="planCard">
+              <div class="card-head">
+                <h2 class="card-title">整份怎么重排（顺序也是信息）</h2>
+                <span class="tag" id="planCount">—</span>
+              </div>
+              <p class="card-note">同样的内容换个顺序，读者抓到的重点完全不同 —— 下面是整份简历的调整建议。</p>
+              <div id="planList" class="plan-list"></div>
+            </div>
+
+            <div class="card" id="exportCard">
+              <div class="card-head">
+                <h2 class="card-title">导出报告</h2>
+                <span class="tag">Markdown</span>
+              </div>
+              <p class="card-note">
+                导出的是完整审视报告（与 Python 端 report.to_markdown 同一套模板），可以直接发出去或存档。
+              </p>
+              <div class="row row--tight">
+                <button id="btnExportMd" class="btn btn--primary btn--sm" type="button">下载报告 .md</button>
+                <button id="btnExportPdf" class="btn btn--ghost btn--sm" type="button">下载 PDF</button>
+                <button id="btnCopyMd" class="btn btn--ghost btn--sm" type="button">复制报告全文</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" id="jdCard">
+            <div class="card-head">
+              <h2 class="card-title">目标岗位 JD</h2>
+              <span class="tag tag--live">引擎按它算覆盖度</span>
+            </div>
+            <label class="sr-only" for="jdText">目标岗位 JD</label>
+            <textarea id="jdText" class="textarea textarea--short" spellcheck="false"
+                      placeholder="把目标岗位的 JD 粘进来（职责 + 任职要求）。有 JD 时，关键词覆盖、硬门槛核查、该投/别投的判断才会算出来。"></textarea>
+            <div class="row row--between">
+              <span id="jdCount" class="counter">0 字</span>
+              <div class="row row--tight">
+                <button id="btnJdClear" class="btn btn--ghost btn--sm" type="button">清空</button>
+                <button id="btnJdSave" class="btn btn--primary btn--sm" type="button">保存并重新审视</button>
+              </div>
+            </div>
+            <p class="card-note card-note--dim">
+              引擎抽词的方式是「词表命中 + 中文 n-gram」，不要求你抄全 JD —— 三段职责加三条要求就够。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- 05 规划：自动生成的拔高路线 ---------- -->
+      <section class="panel" id="panel-plan" data-panel="plan" role="tabpanel" aria-labelledby="tab-plan" hidden>
+        <div class="panel-head">
+          <p class="panel-eyebrow">06 / 规划</p>
+          <h1>差什么，补什么，多久补完</h1>
+          <p class="panel-desc">
+            不用点按钮：行业、职能族、JD 缺口一确定，这一页就自动算好了 ——
+            补什么证据、考什么证、哪些缺口一周内能补上、3 / 6 / 12 个月各干什么。
+          </p>
+        </div>
+
+        <div class="panel-body">
+          <div class="pro-wrap" id="planWrap" hidden>
+            <div class="card" id="planCardMain">
+              <div class="card-head">
+                <h2 class="card-title">按你的行业自动生成的拔高路线</h2>
+                <span class="tag" id="planTag">—</span>
+              </div>
+              <p class="card-note">
+                依据：引擎识别的行业与职能族、你简历里的缺口词、四层诊断里的硬伤。不是通用课程表。
+              </p>
+              <div id="planBody" class="plan-body"></div>
+            </div>
+
+            <div class="card" id="pitchCard">
+              <div class="card-head">
+                <h2 class="card-title">一句话卖点</h2>
+                <button id="btnCopyPitch" class="btn btn--ghost btn--sm" type="button">复制</button>
+              </div>
+              <p class="card-note">面试第一句就用它，别从「我叫…毕业于…」开始。</p>
+              <p id="planPitch" class="pitch-line">—</p>
+            </div>
+
+            <div class="card" id="introCard">
+              <div class="card-head">
+                <h2 class="card-title">60 秒自我介绍</h2>
+                <button id="btnCopyIntro" class="btn btn--ghost btn--sm" type="button">复制</button>
+              </div>
+              <p class="card-note">填两个空就能用。这是面试开场，不是简历正文。</p>
+              <pre id="introText" class="code-block code-block--paper" tabindex="0"></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ============ 全页拖拽遮罩 ============ -->
+  <div id="dropOverlay" class="drop-overlay" hidden>
+    <div class="drop-overlay-inner">
+      <span class="drop-overlay-icon" aria-hidden="true"></span>
+      <p class="drop-overlay-title">松手开始解析</p>
+      <p class="drop-overlay-hint">PDF / DOCX / PPTX / TXT · 20MB 以内</p>
+    </div>
+  </div>
+
+  <!-- ============ 设置弹窗 ============ -->
+  <div class="modal" id="settingsModal" hidden>
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head">
+        <h2 id="settingsTitle" class="modal-title">设置</h2>
+        <button class="icon-btn" type="button" data-close-modal aria-label="关闭">×</button>
+      </div>
+      <p class="modal-desc">
+        接入 OpenAI 兼容接口（如百炼 compatible-mode）时填写，保存在本机 localStorage。
+        LLM 版本与异常回落将在阶段 3 接通；当前所有分析走离线引擎。
+      </p>
+      <label class="field">
+        <span class="field-label">Base URL</span>
+        <input id="setBaseUrl" class="input" type="text" autocomplete="off" spellcheck="false"
+               placeholder="https://dashscope.aliyuncs.com/compatible-mode/v1" />
+      </label>
+      <label class="field">
+        <span class="field-label">API Key</span>
+        <input id="setApiKey" class="input" type="password" autocomplete="off" spellcheck="false"
+               placeholder="sk-..." />
+      </label>
+      <label class="field">
+        <span class="field-label">模型名</span>
+        <input id="setModel" class="input" type="text" autocomplete="off" spellcheck="false"
+               placeholder="deepseek-v3" />
+      </label>
+      <p class="modal-note">提示：简历含姓名、电话等个人信息，接入云端接口前请确认可以外发。</p>
+      <div class="modal-actions">
+        <button class="btn btn--ghost" type="button" data-close-modal>取消</button>
+        <button id="btnSettingsSave" class="btn btn--primary" type="button">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastStack" class="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/plan-data.js"></script>
+  <script src="js/demo-resume.js"></script>
+
+  <!-- resume_engine 2.0 · 从 D:\破甲后\resume_engine 移植（词表由脚本导出，不手抄） -->
+  <script src="js/engine-resume/lexicon.data.js"></script>
+  <script src="js/engine-resume/parse.js"></script>
+  <script src="js/engine-resume/signals.js"></script>
+  <script src="js/engine-resume/profile.js"></script>
+  <script src="js/engine-resume/jd-match.js"></script>
+  <script src="js/engine-resume/diagnose.js"></script>
+  <script src="js/engine-resume/rewrite.js"></script>
+  <script src="js/engine-resume/interview.js"></script>
+  <script src="js/engine-resume/score.js"></script>
+  <script src="js/engine-resume/report.js"></script>
+  <script src="js/engine-resume/review.js"></script>
+  <script src="js/engine-audit.js"></script>
+
+  <script src="js/engine.js"></script>
+  <script src="js/engine-rules.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/upload.js"></script>
+  <script src="js/knowledge.js"></script>
+  <script src="js/jd.js"></script>
+  <script src="js/scan.js"></script>
+  <script src="js/radar.js"></script>
+  <script src="js/report-view.js"></script>
+  <script src="js/audit-view.js"></script>
+  <script src="js/optimize.js"></script>
+  <script src="js/plan.js"></script>
+  <script src="js/pdf-export.js"></script>
+</body>
+</html>
